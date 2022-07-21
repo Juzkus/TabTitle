@@ -5,26 +5,39 @@ javascript:(function(){
     window.tabTitle.open = () => {
         let currentTitle = document.title;
         let modal = document.createElement('div');
+        let bgColor = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
+
+        let textColorEl = document.querySelector('p');
+        textColorEl = textColorEl ? textColorEl : document.body;
+
+        let color = window.getComputedStyle( textColorEl ,null).getPropertyValue('color');
+
+        if (bgColor === 'rgba(0, 0, 0, 0)') {
+            bgColor = '#232323';
+            color = '#fefefe';
+        }
+
         modal.innerHTML = 
-            '<div style="background: #f8f8f8;' +
-            'border: 1px solid #999999;' +
-            'position: fixed;' +
-            'z-index: 1;' +
-            'top: 20%; ' +
-            'left: 50%; ' +
-            'margin-right: -50%;' + 
-            'transform: translate(-50%, -50%);' +
-            'padding: 12px;' +
-            'width: 40%;">' +
-            '<h4>Tab Title</h4>' +
+            '<div style="background-color: ' + bgColor + ';' +
+            '            color: ' + color + ';' + 
+            '            border: 1px solid #999999;' +
+            '            position: fixed;' +
+            '            z-index: 9999 !important;' +
+            '            top: 20%; ' +
+            '            left: 50%; ' +
+            '            margin-right: -50%;' + 
+            '            transform: translate(-50%, -50%);' +
+            '            padding: 12px;' +
+            '            width: 40%;">' +
+            '<h4 style="color: ' + color + '; font-size: 18px !important; padding-bottom: 10px !important;">Tab Title</h4>' +
             '<input style="width: 75%" id="tab-title" type="text" value="' + currentTitle + '"></input>' +
             '<br><br>' +
             '<ul style="margin:0px; margin-bottom: 5px; padding:0px;">' +
             '    <li style="list-style: none; display: inline">' +
-            '        <input type="button" value="Save" onclick="tabTitle.save()"/>' +
+            '        <input id="tab-title-save" type="button" value="Save"/>' +
             '    </li>' +
             '    <li style="list-style: none; display: inline">' +
-            '        <input type="button" value="Cancel" onclick="tabTitle.close()"/>' +
+            '        <input id="tab-title-cancel" type="button" value="Cancel"/>' +
             '    </li>' +
             '</ul>' +
             '</div>';
@@ -32,8 +45,12 @@ javascript:(function(){
         window.tabTitle.modal = modal;
         document.body.appendChild(modal);
 
+        document.getElementById('tab-title-save').onclick = () => {window.tabTitle.save(); };
+        document.getElementById('tab-title-cancel').onclick = () => {window.tabTitle.close(); };
+
         let input = document.getElementById('tab-title');
-        input.setSelectionRange(input.value.length, input.value.length);
+        input.onkeydown = (x) => { if (x.code === 'Enter'){ window.tabTitle.save(); }};
+        input.setSelectionRange(0, input.value.length);
 
         input.focus();
     };
